@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>炽耀公益杀组</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 32px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+        h1 {
+            color: #fbbf24;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 16px;
+        }
+        
+        .latest-card {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #fbbf24;
+        }
+        .latest-title {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .latest-period {
+            color: #fbbf24;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .latest-time {
+            color: #e2e8f0;
+            font-size: 1.2rem;
+            margin: 8px 0;
+        }
+        .latest-result {
+            background: #334155;
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        
+        .predict-card {
+            background: linear-gradient(145deg, #2d3a4f, #1e2a3a);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 2px solid #fbbf24;
+            text-align: center;
+        }
+        .next-label {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        .next-period {
+            color: #fbbf24;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 8px 0;
+        }
+        .kill-box {
+            background: #dc2626;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 60px;
+            font-size: 3rem;
+            font-weight: 700;
+            display: inline-block;
+            margin: 16px 0;
+            box-shadow: 0 6px 0 #991b1b;
+        }
+        .countdown {
+            background: #334155;
+            border-radius: 40px;
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            color: #fbbf24;
+            display: inline-block;
+            margin-top: 12px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .stat-item {
+            background: #334155;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        
+        .history-title {
+            color: #fbbf24;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-list {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #334155;
+            display: grid;
+            grid-template-columns: 100px 80px 100px 1fr 50px;
+            gap: 8px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            align-items: center;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .hit {
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .miss {
+            color: #f87171;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .footer {
+            margin-top: 24px;
+            color: #64748b;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #fbbf24;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .error-msg {
+            color: #f87171;
+            background: #2d1a1a;
+            border-radius: 30px;
+            padding: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .update-time {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .loading {
+            color: #fbbf24;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>炽耀公益杀组</h1>
+    <div class="sub">免费公益禁止圈钱贩卖</div>
+
+    <!-- 最新开奖信息 -->
+    <div class="latest-card" id="latestCard">
+        <div class="latest-title">📅 最新开奖</div>
+        <div class="latest-period" id="latestPeriod">---</div>
+        <div class="latest-time" id="latestTime">--:--</div>
+        <div class="latest-result" id="latestResult">---</div>
+    </div>
+
+    <!-- 下一期预测 -->
+    <div class="predict-card">
+        <div class="next-label">下一期 杀</div>
+        <div class="next-period" id="nextPeriod">---</div>
+        <div>
+            <span class="kill-box" id="killType">--</span>
+        </div>
+        <div class="countdown" id="countdown">计算中...</div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats">
+        <span class="stat-item"> 正确 <span id="hitCount">0</span></span>
+        <span class="stat-item"> 错误 <span id="missCount">0</span></span>
+        <span class="stat-item"> 总数 <span id="totalCount">0</span></span>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="history-title">
+         历史记录
+    </div>
+    <div class="history-list" id="historyList">
+        <div class="loading"> 加载云端数据...</div>
+    </div>
+
+    <div class="update-time" id="updateTime"></div>
+
+    <div class="footer">
+        <span>作者 <a href="#">@xymnb2</a></span> · 
+        <span>官方群聊 <a href="#">@chirou6</a></span>
+    </div>
+    <div id="errorMsg" class="error-msg" style="display: none;"></div>
+</div>
+
+<script>
+    (function() {
+        // DOM元素
+        const latestPeriod = document.getElementById('latestPeriod');
+        const latestTime = document.getElementById('latestTime');
+        const latestResult = document.getElementById('latestResult');
+        const nextPeriod = document.getElementById('nextPeriod');
+        const killType = document.getElementById('killType');
+        const countdownSpan = document.getElementById('countdown');
+        const historyList = document.getElementById('historyList');
+        const hitCount = document.getElementById('hitCount');
+        const missCount = document.getElementById('missCount');
+        const totalCount = document.getElementById('totalCount');
+        const errorMsg = document.getElementById('errorMsg');
+        const updateTime = document.getElementById('updateTime');
+
+        // API地址
+        const API_URL = 'https://pc28.help/kj.json?limit=1';
+        
+        // ========== JSONBin.io 配置 ==========
+        const BIN_ID = '699ad93343b1c97be9934cfc';
+        const API_KEY = '$2a$10$lCMC/yzMB2MgGqYevDY2suIexlV43A3gU8gLd.I9BqhuC8BoXuQX2';
+        const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        
+        // 云端历史数据
+        let historyData = [];
+        let lastPrediction = {
+            period: null,
+            kill: null
+        };
+        let nextLotteryTimestamp = null;
+        let lastProcessedPeriod = null;
+
+        // ========== JSONBin.io 操作 ==========
+        async function loadCloudHistory() {
+            try {
+                const response = await fetch(BIN_URL, {
+                    headers: {
+                        'X-Master-Key': API_KEY
+                    }
+                });
+                
+                if (!response.ok) throw new Error('加载失败');
+                
+                const data = await response.json();
+                historyData = data.record || [];
+                
+                renderHistory();
+            } catch (error) {
+                console.error('加载云端历史失败:', error);
+                historyList.innerHTML = '<div style="color:#f87171; text-align:center; padding:20px;">❌ 加载失败</div>';
+            }
+        }
+
+        async function saveToCloud(updatedHistory) {
+            try {
+                const response = await fetch(BIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY
+                    },
+                    body: JSON.stringify(updatedHistory)
+                });
+                
+                if (!response.ok) throw new Error('保存失败');
+                
+                return true;
+            } catch (error) {
+                console.error('保存到云端失败:', error);
+                return false;
+            }
+        }
+
+        async function addToCloudHistory(item) {
+            const exists = historyData.some(h => h.period === item.period);
+            
+            if (!exists) {
+                const newHistory = [item, ...historyData];
+                if (newHistory.length > 30) newHistory.pop();
+                
+                const success = await saveToCloud(newHistory);
+                if (success) {
+                    historyData = newHistory;
+                    renderHistory();
+                }
+                return success;
+            }
+            return false;
+        }
+
+        // ========== 工具函数 ==========
+        function getTypeFromDigit(digit) {
+            const map = {
+                0: '小双', 1: '小单', 2: '小双', 3: '小单', 4: '小双',
+                5: '大单', 6: '大双', 7: '大单', 8: '大双', 9: '大单'
+            };
+            return map[digit] || '未知';
+        }
+
+        function getOppositeType(type) {
+            const map = {
+                '小单': '大双',
+                '小双': '大单',
+                '大单': '小双',
+                '大双': '小单'
+            };
+            return map[type] || '未知';
+        }
+
+        function isCorrect(kill, actual) {
+            return actual !== kill;
+        }
+
+        // 提取24小时制的小时和分钟
+        function extractHourMinute(timeStr) {
+            const timePart = timeStr.split(' ')[1];
+            const [hour, minute] = timePart.split(':').map(Number);
+            return { hour, minute };
+        }
+
+        function getTypeFromSum(sum) {
+            const num = parseInt(sum, 10);
+            const size = num <= 13 ? '小' : '大';
+            const parity = num % 2 === 0 ? '双' : '单';
+            return size + parity;
+        }
+
+        function calculateNextLotteryTime(currentTimeStr) {
+            const [datePart, timePart] = currentTimeStr.split(' ');
+            const [hour, minute, second] = timePart.split(':').map(Number);
+            
+            const now = new Date();
+            const lotteryDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                hour,
+                minute,
+                second
+            );
+            
+            return lotteryDate.getTime() + 210 * 1000;
+        }
+
+        // ========== 更新界面 ==========
+        function renderHistory() {
+            if (historyData.length === 0) {
+                historyList.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">暂无历史记录</div>';
+                hitCount.innerText = '0';
+                missCount.innerText = '0';
+                totalCount.innerText = '0';
+                return;
+            }
+            
+            let html = '';
+            let hits = 0;
+            
+            historyData.forEach(item => {
+                if (item.correct) hits++;
+                const correctClass = item.correct ? 'hit' : 'miss';
+                const correctSymbol = item.correct ? '✅' : '❌';
+                
+                html += `<div class="history-item">
+                    <span>${item.period}</span>
+                    <span>${item.time}</span>
+                    <span>杀${item.kill}</span>
+                    <span>${item.result}</span>
+                    <span class="${correctClass}">${correctSymbol}</span>
+                </div>`;
+            });
+            
+            historyList.innerHTML = html;
+            hitCount.innerText = hits;
+            missCount.innerText = historyData.length - hits;
+            totalCount.innerText = historyData.length;
+        }
+
+        function updateCountdown() {
+            if (!nextLotteryTimestamp) {
+                countdownSpan.innerText = '⏳ 等待开奖';
+                return;
+            }
+            
+            const now = Date.now();
+            let diff = nextLotteryTimestamp - now;
+            
+            if (diff <= 0) {
+                countdownSpan.innerText = '⏳ 开奖中...';
+                fetchData();
+            } else {
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                countdownSpan.innerText = `⏳ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // ========== 处理新数据 ==========
+        async function processData(data) {
+            const period = data.qihao;
+            
+            if (period === lastProcessedPeriod) {
+                return;
+            }
+            
+            const timeStr = data.opentime;
+            const { hour, minute } = extractHourMinute(timeStr);
+            const sum = parseInt(data.sum, 10);
+            const actualType = getTypeFromSum(sum);
+            const timeDisplay = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            
+            latestPeriod.innerText = period;
+            latestTime.innerText = timeDisplay;
+            latestResult.innerText = `${data.opennum}=${sum} ${actualType}`;
+            
+            const now = new Date();
+            updateTime.innerText = `最后更新: ${now.toLocaleTimeString()}`;
+            
+            // 验证上一期的预测
+            if (lastPrediction.period && lastPrediction.kill) {
+                const correct = isCorrect(lastPrediction.kill, actualType);
+                
+                await addToCloudHistory({
+                    period: lastPrediction.period,
+                    time: timeDisplay,
+                    kill: lastPrediction.kill,
+                    result: `${data.opennum}=${sum} ${actualType}`,
+                    correct: correct
+                });
+            }
+            
+            // ===== 核心算法 =====
+            // 1. 最大值减最小值
+            const max = Math.max(hour, minute);
+            const min = Math.min(hour, minute);
+            const diff = max - min;
+            
+            // 2. 取最后一位
+            const lastDigit = diff % 10;
+            
+            // 3. 得到类型
+            const type = getTypeFromDigit(lastDigit); // 例如 2 → 小双
+            
+            // 4. 取相反作为杀
+            const nextKill = getOppositeType(type);   // 小双 → 大单
+            // ===================
+            
+            const nextPeriodNum = (parseInt(period) + 1).toString();
+            nextPeriod.innerText = nextPeriodNum;
+            killType.innerText = nextKill;
+            
+            lastPrediction = {
+                period: period,
+                kill: nextKill
+            };
+            
+            lastProcessedPeriod = period;
+            nextLotteryTimestamp = calculateNextLotteryTime(timeStr);
+        }
+
+        // ========== API获取 ==========
+        async function fetchData() {
+            try {
+                errorMsg.style.display = 'none';
+                const timestamp = Date.now();
+                const response = await fetch(`${API_URL}&_=${timestamp}`);
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const json = await response.json();
+                
+                if (json.message === 'success' && json.data && json.data.length > 0) {
+                    await processData(json.data[0]);
+                }
+            } catch (error) {
+                console.error('获取失败:', error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = '⚠️ 连接开奖网失败';
+            }
+        }
+
+        // ========== 初始化 ==========
+        async function init() {
+            await loadCloudHistory();
+            await fetchData();
+            
+            setInterval(updateCountdown, 1000);
+            setInterval(fetchData, 5000);
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
